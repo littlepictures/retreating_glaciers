@@ -1,40 +1,70 @@
-# CLIP - [CLIP SHORT NAME]
+# little picture - glacier outlines
 
 ## Background on this CLIP
-[SHORT DESCRIPTION ON WHAT THE CLIP SHOWS AND WHY IT MATTERS IN TERMS OF CLIMATE DATAVIZ (500-600 CHARACTERS)]
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at vestibulum nulla, ac tincidunt sem. Morbi in nisl at nisl feugiat faucibus sed eu neque. In fringilla, odio eu porttitor condimentum, tortor leo congue justo, id venenatis metus lectus sed libero. Mauris id arcu eros. Sed orci mauris, tincidunt nec ex non, eleifend pellentesque dolor. Mauris tellus ligula, tincidunt accumsan sapien accumsan, pellentesque rhoncus ex. Phasellus sollicitudin dolor eget porttitor gravida. Integer malesuada vehicula ante, ac interdum felis congue nec. Mauris in sagittis felis. 
-
+This little picture uses GDAL's tools to select area of interest, rasterise the vector data, smooth it and create a composite image map showing glacier outlines 1850-2016.
 
 ## Data Sources
 [LIST OF ALL DATASOURCES AND SPECIFIC DATASETS USED IN THE CREATION OF THE CLIP]
 
 The CLIP uses the following datasets:
-- [ESA Open Data website](https://climate.esa.int/de/odp/#/dashboard)
+- Glacier Monitoring in Switzerland (GLAMOS) database.
 
-## Data Preparation
-[STEP BY STEP DESCRIPTION ON WHAT THE DATA PROCESSING PROCESS. SHOULD BEGIN WITH A SHORT SUMMARY OF THE OVERALL PROCESS]
+## Data Preparation & Creating Visualizations
+Uses included Python script "gdal_median.py", which requires the scipy library as well as gdal to be installed.
+Command line instructions should operate under any environment with Python and GDAL installed (including OSGeo4W, Cygwin, etc)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at vestibulum nulla, ac tincidunt sem. Morbi in nisl at nisl feugiat faucibus sed eu neque. In fringilla, odio eu porttitor condimentum, tortor leo congue justo, id venenatis metus lectus sed libero. Mauris id arcu eros. Sed orci mauris, tincidunt nec ex non, eleifend pellentesque dolor. Mauris tellus ligula, tincidunt accumsan sapien accumsan, pellentesque rhoncus ex. Phasellus sollicitudin dolor eget porttitor gravida. Integer malesuada vehicula ante, ac interdum felis congue nec. Mauris in sagittis felis. 
+1830
+Clip swiss glacier inventory to area of interest (around Zermatt)
 
-To prepare the data, follow these steps:
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at vestibulum nulla, ac tincidunt sem. Morbi in nisl at nisl feugiat faucibus sed eu neque. 
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at vestibulum nulla, ac tincidunt sem. Morbi in nisl at nisl feugiat faucibus sed eu neque. 
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at vestibulum nulla, ac tincidunt sem. Morbi in nisl at nisl feugiat faucibus sed eu neque. 
+ogr2ogr -f GeoJSON SGI_1850.json inventory_sgi1850_r1992/SGI_1850.shp
+ogr2ogr -f GeoJSON -clipsrc 2621250 1087000 2633400 1099150 glacier_1850_area.jsn inventory_sgi1850_r1992/SGI_1850.shp
 
-## Creating Visualizations
-[STEP BY STEP DESCRIPTION ON WHAT THE DATA PROCESSING PROCESS. SHOULD BEGIN WITH A SHORT SUMMARY OF THE OVERALL PROCESS]
+1931
+Swiss glacier inventory uses old grid for 1931 only, reproject to new grid first
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at vestibulum nulla, ac tincidunt sem. Morbi in nisl at nisl feugiat faucibus sed eu neque. In fringilla, odio eu porttitor condimentum, tortor leo congue justo, id venenatis metus lectus sed libero. Mauris id arcu eros. Sed orci mauris, tincidunt nec ex non, eleifend pellentesque dolor. Mauris tellus ligula, tincidunt accumsan sapien accumsan, pellentesque rhoncus ex. Phasellus sollicitudin dolor eget porttitor gravida. Integer malesuada vehicula ante, ac interdum felis congue nec. Mauris in sagittis felis. 
+ogr2ogr -f GeoJSON -t_srs "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +units=m +no_defs +wktext" 1931_complete.jsn inventory_sgi1931_r2022/SGI_1931.shp
 
-To create a new visualization, follow these steps:
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at vestibulum nulla, ac tincidunt sem. Morbi in nisl at nisl feugiat faucibus sed eu neque. 
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at vestibulum nulla, ac tincidunt sem. Morbi in nisl at nisl feugiat faucibus sed eu neque. 
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at vestibulum nulla, ac tincidunt sem. Morbi in nisl at nisl feugiat faucibus sed eu neque. 
+### Clip to area
+ogr2ogr -f GeoJSON -clipsrc 2621250 1087000 2633400 1099150 glacier_1931_area.jsn 1931_complete.jsn
+
+1973
+ogr2ogr -f GeoJSON -clipsrc 2621250 1087000 2633400 1099150 glacier_1973_area.jsn  inventory_sgi1973_r1976/SGI_1973.shp
+
+2010
+ogr2ogr -f GeoJSON  -clipsrc 2621250 1087000 2633400 1099150 glacier_2010_area.jsn inventory_sgi2010_r2010/SGI_2010.shp
+
+2016 
+ogr2ogr -f GeoJSON   -clipsrc 2621250 1087000 2633400 1099150 glacier_2016_area.jsn inventory_sgi2016_r2020/SGI_2016_glaciers.shp
+
+
+### create initial image (extents and size shown) with earliest data, against a brown background using dark blue
+gdal_rasterize -init 118 72 22 -ot Byte -burn 37 -burn 122 -burn 203 -te 2621250 1087000 2633400 1098500 -ts 3240 3240 glacier_1850_area.jsn 1850_glaciers.tif
+
+### Median filter (using script included here) 11 pixel kernel to smooth outlines. The filter kernel size must be an odd number
+python gdal_median.py -i 1850_glaciers.tif -o 1850_glaciers_median.tif -filt 11
+
+### Rasterize 1931 data using (26, 174, 202) colours, into black background with black as nodata
+gdal_rasterize -ot Byte -burn 26 -burn 174 -burn 202 -a_nodata 0 -te 2621250 1087000 2633400 1098500 -ts 3240 3240 glacier_1931_area.jsn 1931_glaciers.tif
+python gdal_median.py -i 1931_glaciers.tif -o 1931_glaciers_median.tif -filt 11
+
+### Rasterize 1973 data using (88,225,203) colours, into black background with black as nodata
+gdal_rasterize -ot Byte -burn 88 -burn 225 -burn 203 -a_nodata 0 -te 2621250 1087000 2633400 1098500 -ts 3240 3240 glacier_1973_area.jsn 1973_glaciers.tif
+python gdal_median.py -i 1973_glaciers.tif -o 1973_glaciers_median.tif -filt 11
+
+### Rasterize 2010 data using (148, 255, 244) colours, into black background with black as nodata
+gdal_rasterize -ot Byte -burn 148 -burn 255 -burn 244 -a_nodata 0 -te 2621250 1087000 2633400 1098500 -ts 3240 3240 glacier_2010_area.jsn 2010_glaciers.tif
+python gdal_median.py -i 2010_glaciers.tif -o 2010_glaciers_median.tif -filt 11
+
+### Rasterize 2016 data using (255, 255, 255) colours, into black background with black as nodata
+gdal_rasterize -ot Byte -burn 255 -burn 255 -burn 255 -a_nodata 0 -te 2621250 1087000 2633400 1098500 -ts 3240 3240 glacier_2016_area.jsn 2016_glaciers.tif
+python gdal_median.py -i 2016_glaciers.tif -o 2016_glaciers_median.tif -filt 11
+
+### Combine all coloured images using black/0 as no data value
+gdal_merge -co COMPRESS=LZW -o glaciers_map.tif -n 0 1850_glaciers_median.tif 1931_glaciers_median.tif 1973_glaciers_median.tif 2010_glaciers_median.tif 2016_glaciers_median.tif
 
 ## CREDITS & LICENSE
-- Idea by: [INSTITUTION](https://climate.esa.int/)
-- Processing Scripts by: [INSTITUTION](https://climate.esa.int/)
-- Visualization by: [INSTITUTION](https://climate.esa.int/)
+- Idea by: [Planetary Visions Limited]([https://climate.esa.int/](http://www.planetaryvisions.com/index.php))
+- Processing Scripts by: [Planetary Visions Limited]([https://climate.esa.int/](http://www.planetaryvisions.com/index.php))
+- Visualization by: [Planetary Visions Limited]([https://climate.esa.int/](http://www.planetaryvisions.com/index.php))
 
 The code in this repository is published under [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/)
