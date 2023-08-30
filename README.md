@@ -5,7 +5,8 @@ As the climate warms, glaciers around the world are losing ice. In Europe, the e
 
 ## Data Sources
 The CLIP uses the following datasets:
-- Glacier Monitoring in Switzerland (GLAMOS) database.
+- Glacier Monitoring in Switzerland (GLAMOS) database. https://glamos.ch/en/downloads#inventories/A55f-03
+- ESA-CCI Glaciers team. https://doi.pangaea.de/10.1594/PANGAEA.909133
 
 ## Data Preparation & Creating Visualizations
 Uses included Python script "gdal_median.py", which requires the scipy library as well as gdal to be installed.
