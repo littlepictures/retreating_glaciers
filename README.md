@@ -8,7 +8,7 @@ The CLIP uses the following datasets:
 - Glacier Monitoring in Switzerland (GLAMOS) database. https://glamos.ch/en/downloads#inventories/A55f-03
 - ESA-CCI Glaciers team. https://doi.pangaea.de/10.1594/PANGAEA.909133
 
-## Data Preparation & Creating Visualizations
+## Data Preparation & Creating Visualisations
 Uses included Python script "gdal_median.py", which requires the scipy library as well as gdal to be installed.
 Command line instructions should operate under any environment with Python and GDAL installed (including OSGeo4W, Cygwin, etc)
 
