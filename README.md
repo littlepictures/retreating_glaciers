@@ -1,4 +1,4 @@
-# little picture - glacier outlines
+# little picture - glacier retreat 
 
 ## Background on this CLIP
 As the climate warms, glaciers around the world are losing ice. In Europe, the extent of glaciers has been charted on topographic maps since the nineteenth century and by air survey since the middle of the twentieth century. Satellites have been able to monitor glaciers worldwide since the launch of Landsat in 1973. This picture shows a 12 kilometre-wide area around Zermatt in Switzerland, including the Gorner and Findel Glaciers, which have retreated about 3 km since 1850. The area covered by ice is shown for 1850, 1931, 1973, and 2010 based on historical maps and air photos, and for 2015 based on Copernicus Sentinel-2 satellite images.
