@@ -77,6 +77,6 @@ gdal_merge -co COMPRESS=LZW -o glaciers_map.tif -n 0 1850_glaciers_median.tif 19
 ## CREDITS & LICENSE
 - Idea by: [Planetary Visions Limited]([https://climate.esa.int/](http://www.planetaryvisions.com/index.php))
 - Processing Scripts by: [Planetary Visions Limited]([https://climate.esa.int/](http://www.planetaryvisions.com/index.php))
-- Visualization by: [Planetary Visions Limited]([https://climate.esa.int/](http://www.planetaryvisions.com/index.php))
+- Visualisation by: [Planetary Visions Limited]([https://climate.esa.int/](http://www.planetaryvisions.com/index.php))
 
 The code in this repository is published under [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/)
